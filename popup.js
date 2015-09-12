@@ -73,3 +73,10 @@ tokenReq.addEventListener("load", handleTokenResponse);
 tokenReq.setRequestHeader("Content-Type", "application/json");
 tokenReq.send(JSON.stringify(tokenReqJson));
 
+getElementByXpath('//*[@id="shortListDiv"]/a').style.backgroundColor = "#D2EDD2";
+var img = '<img src="' + chrome.extension.getURL("quikr.png") + '" style="width:20px;height:20px;">';
+getElementByXpath('//*[@id="shortListDiv"]/a/span[1]').innerHTML = img;
+getElementByXpath('//*[@id="shortListDiv"]/a/span[1]').style.background = 'none';
+getElementByXpath('//*[@id="shortListDiv"]/a/span[2]').innerHTML = 'BuyQuikr';
+getElementByXpath('//*[@id="shortListDiv"]/a/span[2]').style.color = '#009900';
+getElementByXpath('//*[@id="shortListDiv"]/a/span[3]').style.display = "none";

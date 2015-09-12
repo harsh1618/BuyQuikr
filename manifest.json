@@ -15,5 +15,6 @@
     "permissions": [
         "activeTab",
     "https://api.quikr.com/"
-        ]
+        ],
+    "web_accessible_resources": ["quikr.png"]
 }
