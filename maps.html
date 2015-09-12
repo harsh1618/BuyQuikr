@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script
+src="http://maps.googleapis.com/maps/api/js">
+</script>
+
+<script>
+function initialize()
+{
+  var mapProp = {
+    center: new google.maps.LatLng(26.5000, 80.3000),
+    zoom:15,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  };
+  var kanpur = {lat: 26.5, lng: 80.3};
+  var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+  var contentString = 'Hello World aniruddha';
+  var infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+  var marker = new google.maps.Marker({
+    position: kanpur,
+    map:map,
+  });
+  google.maps.event.addListener(marker,'mouseover', function() {
+      infowindow.open(map, marker);
+  });
+
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+</head>
+
+<body>
+<div id="googleMap" style="width:400px;height:300px;"></div>
+<br>
+
+</body>
+</html>
+
