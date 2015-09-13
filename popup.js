@@ -1,8 +1,8 @@
-var secret = "0c2487f6740c0bf89b64a4827e07cbe2";
+var secret = "0c2487f6740c0bf89b64a4827e07cbe2"; /* invalidated, use your API secret here */
 
-var date = '2015-09-13';
-var appId = "541";
-var email = "mohitashokgarg@gmail.com";
+var date = new Date().toJSON().slice(0, 10);
+var appId = "000";
+var email = "";
 
 var productName = document.getElementsByTagName('h1')[0].innerHTML;
 var productCategory = getElementByXpath('//*[@id="fk-mainbody-id"]/div/div[2]/div/div/div/ul/li[2]/a').innerHTML;
