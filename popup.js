@@ -37,12 +37,13 @@ function updateSidebar() {
 
 function createDiv(ad) {
     var adDiv = document.createElement('div');
+    adDiv.className = "pu-visual-section";
     adDiv.style.marginBottom = "60px";
     if (ad.images[0] && ad.images[0].length > 10)
         imgUrl = ad.images[0];
     else
         imgUrl = chrome.extension.getURL("logo.jpg");
-    adDiv.innerHTML = '<img src = "' + imgUrl + '" width="100px" height="100px"><br/><a href="' + ad.url + '" target="_blank">' + ad.title + '</a><br/>Rs ' + ad.attribute_Price;
+    adDiv.innerHTML = '<a href="' + ad.url + '" target="_blank"><img src = "' + imgUrl + '" width="100px" height="100px"><br/><div class="pu-title fk-font-13">' + ad.title + '</div><div class="pu-final"><span class="fk-font-17 fk-bold">Rs. ' + ad.attribute_Price+'</span></div><div class="pu-border-top"></div></a>';
     getElementByXpath('//*[@id="shortListDiv"]/div').appendChild(adDiv);
 }
 
