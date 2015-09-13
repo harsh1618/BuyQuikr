@@ -35,6 +35,24 @@ function updateSidebar() {
     getElementByXpath('//*[@id="shortListDiv"]/div').innerText = "";
 }
 
+function addMap(ads) {
+    var mapJson = {"type" : "FeatureCollection", "features" : []};
+    var lat = '';
+    var lon = '';
+    for (var i = 0; i < 3; i++) {
+        if (!ads[i].geo_pin) continue;
+        lat = parseFloat(ads[i].geo_pin.split(",")[0]);
+        lon = parseFloat(ads[i].geo_pin.split(",")[1]);
+        var thisJson = {"type" : "Feature", "geometry" : {"type" : "Point", "coordinates" : [lon, lat]}, "properties" : {"name" : i.toString()}};
+        mapJson.features.push(thisJson);
+    }
+    var mapUrl = encodeURI('https://api.mapbox.com/v4/mapbox.streets/geojson(' + JSON.stringify(mapJson) + ')/' + lon + ',' + lat + ',9/500x300.png?access_token=pk.eyJ1IjoibnV0cmlub2FudGkiLCJhIjoiY2llaWdtaXkyMDBrdnNybTFkZ2J2azZjdyJ9.X4Q7aMNwpwB03pG5ntOHsQ');
+
+    var imgDiv = document.createElement('div');
+    imgDiv.innerHTML = '<img src = "' + mapUrl + '" width="200px" height="200px">';
+    getElementByXpath('//*[@id="shortListDiv"]/div').appendChild(imgDiv);
+}
+
 function createDiv(ad) {
     var adDiv = document.createElement('div');
     adDiv.className = "pu-visual-section";
@@ -43,7 +61,11 @@ function createDiv(ad) {
         imgUrl = ad.images[0];
     else
         imgUrl = chrome.extension.getURL("logo.jpg");
-    adDiv.innerHTML = '<a href="' + ad.url + '" target="_blank"><img src = "' + imgUrl + '" width="100px" height="100px"><br/><div class="pu-title fk-font-13">' + ad.title + '</div><div class="pu-final"><span class="fk-font-17 fk-bold">Rs. ' + ad.attribute_Price+'</span></div><div class="pu-border-top"></div></a>';
+    if (ad.attribute_Price)
+        price = '<p style="color:#e65c00">Rs ' + ad.attribute_Price + '</p>';
+    else
+        price = '';
+    adDiv.innerHTML = '<a href="' + ad.url + '" target="_blank"><img src = "' + imgUrl + '" width="100px" height="100px"><br/><div class="pu-title fk-font-13">' + ad.title + '</div><div class="pu-final"><span class="fk-font-17 fk-bold">Rs. ' + price +'</span></div><div class="pu-border-top"></div></a>';
     getElementByXpath('//*[@id="shortListDiv"]/div').appendChild(adDiv);
 }
 
@@ -51,18 +73,16 @@ function handleApiResponse() {
     updateSidebar();
     var response = JSON.parse(this.response);
     var ads = response.AdsByCategoryResponse.AdsByCategoryData.docs;
-    var best = 0;
-    var maxScore = -1;
     for (var i = 0; i < ads.length; i++) {
         ads[i].score = numCommonWords(productName, ads[i].title);
     }
     ads.sort(function(a, b){return b.score - a.score;});
 
     for (var i = 0; i < 3; i++) {
-        console.log(ads[i].title);
-        console.log(ads[i].images[0]);
         createDiv(ads[i]);
     }
+
+    addMap(ads);
 }
 
 function getApiResponse(apiName, apiParams, token, tokenId) {
