@@ -16,5 +16,5 @@
         "activeTab",
     "https://api.quikr.com/"
         ],
-    "web_accessible_resources": ["quikr.png"]
+    "web_accessible_resources": ["quikr.png", "logo.jpg"]
 }

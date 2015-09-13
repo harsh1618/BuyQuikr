@@ -13,7 +13,7 @@ function numCommonWords(a, b) {
     arrays = [lista, listb];
     return arrays.shift().filter(function(v) {
         return arrays.every(function(a) {
-            return a.indexOf(v) !== -1;
+            return a.indexOf(v) !== -1 && v.length > 2;
         });
     }).length;
 }
@@ -22,20 +22,46 @@ function getElementByXpath(path) {
       return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 }
 
+function updateSidebar() {
+    getElementByXpath('//*[@id="shortListDiv"]/a').style.backgroundColor = "#D2EDD2";
+    var img = '<img src="' + chrome.extension.getURL("quikr.png") + '" style="width:20px;height:20px;">';
+    getElementByXpath('//*[@id="shortListDiv"]/a/span[1]').innerHTML = img;
+    getElementByXpath('//*[@id="shortListDiv"]/a/span[1]').style.background = 'none';
+    getElementByXpath('//*[@id="shortListDiv"]/a/span[2]').innerHTML = 'BuyQuikr';
+    getElementByXpath('//*[@id="shortListDiv"]/a/span[2]').style.color = '#009900';
+    getElementByXpath('//*[@id="shortListDiv"]/a/span[3]').style.display = "none";
+    getElementByXpath('//*[@id="shortListDiv"]').style.right = "-203px";
+    document.getElementsByClassName('mainContainer')[0].style.width = "200px";
+    getElementByXpath('//*[@id="shortListDiv"]/div').innerText = "";
+}
+
+function createDiv(ad) {
+    var adDiv = document.createElement('div');
+    adDiv.style.marginBottom = "60px";
+    if (ad.images[0] && ad.images[0].length > 10)
+        imgUrl = ad.images[0];
+    else
+        imgUrl = chrome.extension.getURL("logo.jpg");
+    adDiv.innerHTML = '<img src = "' + imgUrl + '" width="100px" height="100px"><br/><a href="' + ad.url + '" target="_blank">' + ad.title + '</a><br/>Rs ' + ad.attribute_Price;
+    getElementByXpath('//*[@id="shortListDiv"]/div').appendChild(adDiv);
+}
+
 function handleApiResponse() {
+    updateSidebar();
     var response = JSON.parse(this.response);
     var ads = response.AdsByCategoryResponse.AdsByCategoryData.docs;
     var best = 0;
     var maxScore = -1;
     for (var i = 0; i < ads.length; i++) {
-        score = numCommonWords(productName, ads[i].title);
-        if (score > maxScore) {
-            maxScore = score;
-            best = i;
-        }
-        console.log(ads[i].title + " " + score);
+        ads[i].score = numCommonWords(productName, ads[i].title);
     }
-    console.log(ads[best].title);
+    ads.sort(function(a, b){return b.score - a.score;});
+
+    for (var i = 0; i < 3; i++) {
+        console.log(ads[i].title);
+        console.log(ads[i].images[0]);
+        createDiv(ads[i]);
+    }
 }
 
 function getApiResponse(apiName, apiParams, token, tokenId) {
@@ -73,10 +99,3 @@ tokenReq.addEventListener("load", handleTokenResponse);
 tokenReq.setRequestHeader("Content-Type", "application/json");
 tokenReq.send(JSON.stringify(tokenReqJson));
 
-getElementByXpath('//*[@id="shortListDiv"]/a').style.backgroundColor = "#D2EDD2";
-var img = '<img src="' + chrome.extension.getURL("quikr.png") + '" style="width:20px;height:20px;">';
-getElementByXpath('//*[@id="shortListDiv"]/a/span[1]').innerHTML = img;
-getElementByXpath('//*[@id="shortListDiv"]/a/span[1]').style.background = 'none';
-getElementByXpath('//*[@id="shortListDiv"]/a/span[2]').innerHTML = 'BuyQuikr';
-getElementByXpath('//*[@id="shortListDiv"]/a/span[2]').style.color = '#009900';
-getElementByXpath('//*[@id="shortListDiv"]/a/span[3]').style.display = "none";
